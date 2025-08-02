@@ -812,6 +812,18 @@ a:focus {
 
 /* レスポンシブ対応 */
 @media screen and (max-width: 768px) {
+  .column__img {
+    height: 20vw;
+    background-size: contain;
+    background-position: center;
+    min-height: 60px;
+  }
+
+  .column__img:nth-child(odd) {
+    height: 25vw;
+    min-height: 80px;
+  }
+
   .portfolio-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
