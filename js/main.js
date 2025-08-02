@@ -1,12 +1,6 @@
 /**
- * demo.js
- * http://www.codrops.com
- *
- * Licensed under the MIT license.
- * http://www.opensource.org/licenses/mit-license.php
- *
- * Copyright 2019, Codrops
- * http://www.codrops.com
+ * Modern Portfolio Animation
+ * Updated to use GSAP v3 and modern JavaScript
  */
 {
   const MathUtils = {
@@ -19,6 +13,7 @@
     getRandomFloat: (min, max) =>
       (Math.random() * (max - min) + min).toFixed(2),
   };
+
   const body = document.body;
   const docEl = document.documentElement;
 
@@ -28,20 +23,12 @@
   calcWinsize();
   window.addEventListener("resize", calcWinsize);
 
-  // Gets the mouse position. From http://www.quirksmode.org/js/events_properties.html#position
-  const getMousePos = (ev) => {
-    let posx = 0;
-    let posy = 0;
-    if (!ev) e = window.event;
-    if (ev.pageX || ev.pageY) {
-      posx = ev.pageX;
-      posy = ev.pageY;
-    } else if (ev.clientX || ev.clientY) {
-      posx = ev.clientX + body.scrollLeft + docEl.scrollLeft;
-      posy = ev.clientY + body.scrollTop + docEl.scrollTop;
-    }
-    return { x: posx, y: posy };
-  };
+  // Modern event handling for mouse position
+  const getMousePos = (ev) => ({
+    x: ev.clientX,
+    y: ev.clientY
+  });
+
   let mousepos = { x: winsize.width / 2, y: winsize.height / 2 };
   window.addEventListener("mousemove", (ev) => (mousepos = getMousePos(ev)));
 
@@ -50,7 +37,8 @@
     letters: true,
   };
 
-  // Custom cursor
+
+  // Custom cursor with modern GSAP
   class Cursor {
     constructor(el) {
       this.DOM = { el: el };
@@ -60,8 +48,9 @@
       this.scale = 1;
       this.lastScale = 1;
       this.lastY = 0;
-      requestAnimationFrame(() => this.render());
+      this.render();
     }
+
     render() {
       this.lastMousePos.x = MathUtils.lerp(
         this.lastMousePos.x,
@@ -75,36 +64,40 @@
       );
       this.direction = this.lastY - mousepos.y > 0 ? "up" : "down";
       this.lastScale = MathUtils.lerp(this.lastScale, this.scale, 0.15);
-      this.DOM.circle.style.transform = `translateX(${this.lastMousePos.x}px) translateY(${this.lastMousePos.y}px) scale(${this.lastScale})`;
+      
+      gsap.set(this.DOM.circle, {
+        x: this.lastMousePos.x,
+        y: this.lastMousePos.y,
+        scale: this.lastScale
+      });
+      
       this.lastY = mousepos.y;
       requestAnimationFrame(() => this.render());
     }
+
     enter() {
       this.scale = 1.5;
     }
+
     leave() {
       this.scale = 1;
     }
+
     click() {
       this.lastScale = 0.4;
     }
   }
 
-  // Vertical images column
+  // Column animation with modern GSAP
   class Column {
     constructor(el) {
       this.DOM = { el: el };
-
-      // The column's height
       const rect = this.DOM.el.getBoundingClientRect();
       this.height = rect.height;
-
-      // Check if the column starts on the top of the viewport or if it ends on the bottom of the viewport. This will define the column's translation direction.
       this.isBottom = this.DOM.el.classList.contains("column--bottom");
-
-      // Tilt the column on mousemove.
       this.tilt();
     }
+
     tilt() {
       let translationVals = { tx: 0, ty: 0 };
       const randX = MathUtils.getRandomFloat(5, 20);
@@ -114,6 +107,7 @@
       const rY2 = this.isBottom
         ? MathUtils.getRandomFloat(30, 80)
         : MathUtils.getRandomFloat(10, 30);
+
       const render = () => {
         if (activeTilt.columns) {
           translationVals.tx = MathUtils.lerp(
@@ -132,7 +126,8 @@
             ),
             0.03
           );
-          TweenMax.set(this.DOM.el, {
+          
+          gsap.set(this.DOM.el, {
             x: translationVals.tx,
             y: translationVals.ty,
             rotation: 0.01,
@@ -151,7 +146,8 @@
     constructor(el) {
       this.DOM = { el: el };
       this.DOM.title = this.DOM.el.querySelector(".item__content-title");
-      // Create spans out of every letter
+      
+      // Create spans out of every letter using charming
       charming(this.DOM.title);
       this.DOM.titleLetters = [...this.DOM.title.querySelectorAll("span")];
       this.titleLettersTotal = this.DOM.titleLetters.length;
@@ -159,26 +155,29 @@
       this.DOM.backCtrl = this.DOM.el.querySelector(".item__content-back");
       this.initEvents();
     }
+
     initEvents() {
       this.DOM.backCtrl.addEventListener("click", (ev) => {
         ev.preventDefault();
         menu.closeItem();
       });
     }
+
     setCurrent() {
       this.DOM.el.classList.add("item--current");
     }
+
     resetCurrent() {
       this.DOM.el.classList.remove("item--current");
     }
   }
 
-  // A Menu Item
+  // Menu Item with modern animations
   class MenuItem {
     constructor(el) {
       this.DOM = { el: el };
 
-      // Create spans out of every letter
+      // Create spans out of every letter using charming
       charming(this.DOM.el);
       this.DOM.letters = [...this.DOM.el.querySelectorAll("span")];
       this.lettersTotal = this.DOM.letters.length;
@@ -189,55 +188,52 @@
         this.totalRandomLetters <= this.lettersTotal
           ? this.totalRandomLetters
           : this.lettersTotal;
-      // The amount that they move (y-axis)
+      
       this.lettersTranslations = Array.from(
         { length: this.totalRandomLetters },
-        (_) => {
+        () => {
           const tr = MathUtils.getRandomFloat(10, 50);
           return [-tr, tr];
         }
       );
       this.lettersRotations = Array.from(
         { length: this.totalRandomLetters },
-        (_) => {
+        () => {
           const rr = MathUtils.getRandomFloat(0, 6);
           return [-rr, rr];
         }
       );
 
-      // Init/Bind events
       this.initEvents();
     }
+
     initEvents() {
-      // Initialize the random letters of the menu item that move when hovering and moving the mouse
-      this.mouseenterFn = (_) => {
+      this.mouseenterFn = () => {
         const shuffled = [...this.DOM.letters].sort(() => 0.5 - Math.random());
         this.DOM.randLetters = shuffled.slice(0, this.totalRandomLetters);
       };
-      // Move the random letters up and down when moving the mouse
+      
       this.mousemoveFn = (ev) => requestAnimationFrame(() => this.tilt(ev));
-      // Reset the position of the random letters
-      this.mouseleaveFn = (_) => this.resetTilt();
+      this.mouseleaveFn = () => this.resetTilt();
+      
       this.DOM.el.addEventListener("mouseenter", this.mouseenterFn);
       this.DOM.el.addEventListener("mousemove", this.mousemoveFn);
       this.DOM.el.addEventListener("mouseleave", this.mouseleaveFn);
     }
+
     tilt(ev) {
-      if (!activeTilt.letters) return;
-      // Document scrolls
-      const docScrolls = {
-        left: body.scrollLeft + docEl.scrollLeft,
-        top: body.scrollTop + docEl.scrollTop,
-      };
+      if (!activeTilt.letters || !this.DOM.randLetters) return;
+      
       const bounds = this.DOM.el.getBoundingClientRect();
-      // Mouse position relative to the main element (this.DOM.el)
       const relmousepos = {
-        x: mousepos.x - bounds.left - docScrolls.left,
-        y: mousepos.y - bounds.top - docScrolls.top,
+        x: mousepos.x - bounds.left,
+        y: mousepos.y - bounds.top,
       };
-      for (const [index, letter] of this.DOM.randLetters.entries()) {
-        TweenMax.to(letter, 3, {
-          ease: Expo.easeOut,
+
+      this.DOM.randLetters.forEach((letter, index) => {
+        gsap.to(letter, {
+          duration: 3,
+          ease: "expo.out",
           y: MathUtils.lineEq(
             this.lettersTranslations[index][1],
             this.lettersTranslations[index][0],
@@ -252,319 +248,239 @@
             0,
             relmousepos.y
           ),
+          overwrite: "auto"
         });
-      }
+      });
     }
+
     resetTilt() {
-      if (!activeTilt.letters) return;
-      new TimelineMax()
-        .to(
-          this.DOM.randLetters,
-          0.2,
-          {
-            ease: Quad.easeOut,
-            y: cursor.direction === "up" ? "-=80%" : "+=80",
-            rotation: cursor.direction === "up" ? "-=10" : "+=10",
-            opacity: 0,
-          },
-          0
-        )
-        .staggerTo(
-          this.DOM.randLetters,
-          MathUtils.getRandomFloat(0.5, 0.7),
-          {
-            ease: Elastic.easeOut.config(1, 0.4),
-            startAt: {
-              y: cursor.direction === "up" ? "80%" : "-80%",
-              opacity: 0,
-            },
-            y: "0%",
-            rotation: 0,
-            opacity: 1,
-          },
-          0.02,
-          0.2
-        );
+      if (!activeTilt.letters || !this.DOM.randLetters) return;
+      
+      const tl = gsap.timeline();
+      
+      tl.to(this.DOM.randLetters, {
+        duration: 0.2,
+        ease: "quad.out",
+        y: cursor.direction === "up" ? "-80%" : "80%",
+        rotation: cursor.direction === "up" ? -10 : 10,
+        opacity: 0,
+        overwrite: true
+      })
+      .to(this.DOM.randLetters, {
+        duration: MathUtils.getRandomFloat(0.5, 0.7),
+        ease: "elastic.out(1, 0.4)",
+        y: "0%",
+        rotation: 0,
+        opacity: 1,
+        stagger: 0.02,
+        overwrite: false
+      }, 0.2);
     }
   }
 
   class Menu {
     constructor(el) {
       this.DOM = { el: el };
-      // The menu items
       this.DOM.items = document.querySelectorAll(".menu > .menu__item");
       this.menuItems = Array.from(this.DOM.items, (item) => new MenuItem(item));
-      // Init/Bind events
       this.initEvents();
     }
+
     initEvents() {
-      // Clicking a menu item opens up the content item and hides the menu (items)
-      for (let menuItem of this.menuItems) {
+      this.menuItems.forEach(menuItem => {
         menuItem.DOM.el.addEventListener("click", () =>
           this.openItem(menuItem)
         );
-      }
+      });
     }
+
     openItem(menuItem) {
       if (this.isAnimating) return;
       this.isAnimating = true;
 
       this.currentItem = this.menuItems.indexOf(menuItem);
-
-      // Set the content item to current
       const contentItem = contentItems[this.currentItem];
       contentItem.setCurrent();
 
-      // Disable tilts
       activeTilt.columns = false;
       activeTilt.letters = false;
 
       const duration = 1.2;
-      const ease = new Ease(BezierEasing(1, 0, 0.735, 0.775));
-      const columnsStagger = 0;
+      const ease = "power4.out";
 
-      this.openItemTimeline = new TimelineMax({
+      const tl = gsap.timeline({
         onComplete: () => (this.isAnimating = false),
-      })
-        // Animate columns out
-        .staggerTo(
-          columnsElems,
-          duration,
-          {
-            ease: ease,
-            cycle: {
-              y: (i, t) =>
-                t.classList.contains("column--bottom")
-                  ? columns[i].height + winsize.height * 0.2
-                  : -1 * columns[i].height - winsize.height * 0.2,
-            },
-            //scaleX: 0.7,
-            opacity: 0,
-          },
-          columnsStagger,
-          0
-        )
-        .to(
-          columnsWrap,
-          duration,
-          {
-            ease: ease,
-            rotation: -2,
-          },
-          0
-        )
+      });
 
-        // Animate menu items out
-        .staggerTo(
-          menuItem.DOM.letters,
-          duration * 0.7,
-          {
-            ease: ease,
-            cycle: {
-              y: (i, _) =>
-                i % 2 == 0
-                  ? MathUtils.getRandomFloat(-250, -150)
-                  : MathUtils.getRandomFloat(150, 250),
-            },
-            rotation: `+=${MathUtils.getRandomFloat(0, 20)}`,
-            opacity: 0,
-          },
-          -0.01,
-          0
-        )
-        .to(
-          this.menuItems
-            .filter((item) => item != menuItem)
-            .map((t) => t.DOM.el),
-          duration * 0.5,
-          {
-            ease: ease,
-            opacity: 0,
-          },
-          0
-        )
+      // Animate columns out
+      tl.to(columnsElems, {
+        duration: duration,
+        ease: ease,
+        y: (i, target) => {
+          const column = columns[i];
+          return target.classList.contains("column--bottom")
+            ? column.height + winsize.height * 0.2
+            : -1 * column.height - winsize.height * 0.2;
+        },
+        opacity: 0,
+        stagger: 0,
+      }, 0)
 
-        // Animate content.first and contentMove (unreveal effect: both move in different directions)
-        .to(
-          content.first,
-          duration * 0.8,
-          {
-            ease: Expo.easeOut,
-            y: "100%",
-          },
-          duration + duration * columnsStagger * columnsTotal
-        )
-        .to(
-          contentMove,
-          duration * 0.8,
-          {
-            ease: Expo.easeOut,
-            y: "-100%",
-          },
-          duration + duration * columnsStagger * columnsTotal
-        )
+      // Animate columns wrap
+      .to(columnsWrap, {
+        duration: duration,
+        ease: ease,
+        rotation: -2,
+      }, 0)
 
-        // Animate the content item title letters
-        .set(
-          contentItem.DOM.titleLetters,
-          {
-            opacity: 0,
-          },
-          duration + duration * columnsStagger * columnsTotal
-        )
-        .staggerTo(
-          contentItem.DOM.titleLetters,
-          duration,
-          {
-            ease: Expo.easeOut,
-            startAt: {
-              cycle: {
-                y: (i, _) =>
-                  i % 2 == 0
-                    ? MathUtils.getRandomFloat(-35, -15)
-                    : MathUtils.getRandomFloat(15, 35),
-                rotation: MathUtils.getRandomFloat(-20, 0),
-              },
-            },
-            y: 0,
-            rotation: 0,
-            opacity: 1,
-          },
-          -0.01,
-          duration + duration * columnsStagger * columnsTotal
-        );
+      // Animate menu items out
+      .to(menuItem.DOM.letters, {
+        duration: duration * 0.7,
+        ease: ease,
+        y: (i) => i % 2 == 0 
+          ? MathUtils.getRandomFloat(-250, -150)
+          : MathUtils.getRandomFloat(150, 250),
+        rotation: `+=${MathUtils.getRandomFloat(0, 20)}`,
+        opacity: 0,
+        stagger: -0.01,
+      }, 0)
+
+      .to(this.menuItems
+        .filter((item) => item != menuItem)
+        .map((t) => t.DOM.el), {
+        duration: duration * 0.5,
+        ease: ease,
+        opacity: 0,
+      }, 0)
+
+      // Content reveal effect
+      .to(content.first, {
+        duration: duration * 0.8,
+        ease: "expo.out",
+        y: "100%",
+      }, duration)
+
+      .to(contentMove, {
+        duration: duration * 0.8,
+        ease: "expo.out",
+        y: "-100%",
+      }, duration)
+
+      // Animate content title
+      .set(contentItem.DOM.titleLetters, {
+        opacity: 0,
+        y: (i) => i % 2 == 0 
+          ? MathUtils.getRandomFloat(-35, -15)
+          : MathUtils.getRandomFloat(15, 35),
+        rotation: MathUtils.getRandomFloat(-20, 0),
+      }, duration)
+
+      .to(contentItem.DOM.titleLetters, {
+        duration: duration,
+        ease: "expo.out",
+        y: 0,
+        rotation: 0,
+        opacity: 1,
+        stagger: -0.01,
+      }, duration);
     }
+
     closeItem() {
       if (this.isAnimating) return;
       this.isAnimating = true;
 
       const contentItem = contentItems[this.currentItem];
-
       const duration = 1;
-      const ease = Sine.easeOut;
+      const ease = "sine.out";
 
-      this.openItemTimeline = new TimelineMax({
+      const tl = gsap.timeline({
         onComplete: () => {
           activeTilt.columns = true;
           activeTilt.letters = true;
           this.isAnimating = false;
         },
-      })
-        .staggerTo(
-          contentItem.DOM.titleLetters,
-          duration * 0.6,
-          {
-            ease: new Ease(BezierEasing(0.775, 0.05, 0.87, 0.465)),
-            cycle: {
-              y: (i, _) =>
-                i % 2 == 0
-                  ? MathUtils.getRandomFloat(-35, -15)
-                  : MathUtils.getRandomFloat(15, 35),
-              rotation: MathUtils.getRandomFloat(-20, 0),
-            },
-            opacity: 0,
-          },
-          0.01,
-          0
-        )
+      });
 
-        // Animate content.first and contentMove (unreveal effect: both move in different directions)
-        .to(
-          [content.first, contentMove],
-          duration * 0.6,
-          {
-            ease: new Ease(BezierEasing(0.775, 0.05, 0.87, 0.465)),
-            y: "0%",
-            onComplete: () => {
-              // Reset the content item current classclass
-              contentItem.resetCurrent();
-            },
-          },
-          0.2
-        )
+      tl.to(contentItem.DOM.titleLetters, {
+        duration: duration * 0.6,
+        ease: "power4.out",
+        y: (i) => i % 2 == 0 
+          ? MathUtils.getRandomFloat(-35, -15)
+          : MathUtils.getRandomFloat(15, 35),
+        rotation: MathUtils.getRandomFloat(-20, 0),
+        opacity: 0,
+        stagger: 0.01,
+      }, 0)
 
-        // Animate columns in
-        .staggerTo(
-          columnsElems,
-          duration,
-          {
-            ease: ease,
-            y: 0,
-            x: 0,
-            //scaleX: 1,
-            opacity: 1,
-          },
-          0.02,
-          duration * 0.6
-        )
-        .to(
-          columnsWrap,
-          duration,
-          {
-            ease: ease,
-            rotation: 0,
-          },
-          duration * 0.6
-        )
+      .to([content.first, contentMove], {
+        duration: duration * 0.6,
+        ease: "power4.out",
+        y: "0%",
+        onComplete: () => {
+          contentItem.resetCurrent();
+        },
+      }, 0.2)
 
-        // Animate menu items in
-        .to(
-          this.menuItems[this.currentItem].DOM.letters,
-          duration * 0.6,
-          {
-            ease: Quint.easeOut,
-            y: 0,
-            opacity: 1,
-            rotation: 0,
-          },
-          duration
-        )
-        .to(
-          this.DOM.items,
-          duration * 0.6,
-          {
-            ease: ease,
-            opacity: 1,
-          },
-          duration
-        );
+      .to(columnsElems, {
+        duration: duration,
+        ease: ease,
+        y: 0,
+        x: 0,
+        opacity: 1,
+        stagger: 0.02,
+      }, duration * 0.6)
+
+      .to(columnsWrap, {
+        duration: duration,
+        ease: ease,
+        rotation: 0,
+      }, duration * 0.6)
+
+      .to(this.menuItems[this.currentItem].DOM.letters, {
+        duration: duration * 0.6,
+        ease: "quint.out",
+        y: 0,
+        opacity: 1,
+        rotation: 0,
+      }, duration)
+
+      .to(this.DOM.items, {
+        duration: duration * 0.6,
+        ease: ease,
+        opacity: 1,
+      }, duration);
     }
   }
 
-  // Custom mouse cursor
+  // Initialize
   const cursor = new Cursor(document.querySelector(".cursor"));
-  // Content elements
+  
   const content = {
     first: document.querySelector(".content--first"),
     second: document.querySelector(".content--second"),
   };
 
-  // Content items
   const contentItems = Array.from(
     content.second.querySelectorAll(".item"),
     (item) => new ContentItem(item)
   );
 
-  // content.first inner moving element (reveal/unreveal effect purposes)
   const contentMove = content.first.querySelector(".content__move");
-
-  // The image columns behind the menu
   const columnsWrap = document.querySelector(".columns");
   const columnsElems = columnsWrap.querySelectorAll(".column");
   const columnsTotal = columnsElems.length;
   let columns;
 
-  // The Menu
   const menu = new Menu(content.second.querySelector(".menu"));
 
-  // Activate the enter/leave/click methods of the custom cursor when hovering in/out on every <a> and when clicking anywhere
-  [...document.querySelectorAll("a")].forEach((link) => {
+  // Cursor interactions
+  document.querySelectorAll("a").forEach((link) => {
     link.addEventListener("mouseenter", () => cursor.enter());
     link.addEventListener("mouseleave", () => cursor.leave());
   });
   document.addEventListener("click", () => cursor.click());
 
-  // Preload all the images in the page
+  // Initialize when images are loaded
   imagesLoaded(
     document.querySelectorAll(".column__img"),
     { background: true },
