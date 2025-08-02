@@ -255,7 +255,7 @@ main {
 }
 
 .js main {
-  overflow: hidden;
+  overflow: auto;
 }
 
 .cursor {
@@ -420,7 +420,7 @@ a:focus {
 .menu__item {
   display: flex;
   font-weight: var(--font-weight-extrabold);
-  font-size: clamp(8rem, 16vw, 20rem);
+  font-size: clamp(6.5rem, 16vw, 20rem);
   line-height: 1.1;
   cursor: pointer;
   padding-bottom: var(--space-sm);
@@ -518,6 +518,9 @@ a:focus {
 }
 
 @container (min-width: 53em) {
+  .js main {
+    overflow: hidden;
+  }
   .frame {
     position: fixed;
     text-align: left;
