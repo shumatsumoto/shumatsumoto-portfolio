@@ -180,12 +180,18 @@ body {
 }
 
 body {
-  --color-text: #252528;
-  --color-bg: #afb6bc;
-  --color-link: #252528;
-  --color-link-hover: #252528;
-  --color-menu-text: #252528;
-  --color-bg-move: #afb6bc;
+  --color-text: #f0f0f0;
+  --color-bg: #1a1a1a;
+  --color-link: #4a90e2;
+  --color-link-hover: #6ab7ff;
+  --color-menu-text: #ffffff;
+  --color-bg-move: #222222;
+  --color-secondary: #a0a0a0;
+  --color-accent: #4a90e2;
+  --color-accent-dark: #357abd;
+  --color-card-bg: rgba(255, 255, 255, 0.12);
+  --color-card-border: rgba(255, 255, 255, 0.18);
+  --color-overlay: rgba(0, 0, 0, 0.6);
   color: var(--color-text);
   background-color: var(--color-bg);
   font-family: fieldwork-hum, sans-serif;
@@ -342,11 +348,12 @@ a:focus {
 .column__img {
   width: 100%;
   display: block;
-  opacity: 0.4;
+  opacity: 0.25;
   background-size: contain;
   background-position: 50% 50%;
   background-repeat: no-repeat;
   height: 12vw;
+  filter: brightness(0.8) contrast(1.1);
 }
 
 .column__img:nth-child(odd) {
@@ -410,7 +417,8 @@ a:focus {
   flex: none;
   background-size: cover;
   background-position: 50% 25%;
-  opacity: 0.4;
+  opacity: 0.3;
+  filter: brightness(0.75) contrast(1.2);
 }
 
 .item__content {
@@ -544,6 +552,7 @@ a:focus {
   .cursor__inner--circle {
     width: 25px;
     height: 25px;
-    border: 1px solid #fff;
+    border: 1px solid #4a90e2;
+    box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
   }
 }
