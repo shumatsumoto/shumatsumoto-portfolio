@@ -457,6 +457,11 @@
           text-align: left;
         }
       }
+
+      /* About Me画像サイズ調整 */
+      .about-me-img {
+        background-size: 65% !important;
+      }
     </style>
     <script>
       document.documentElement.className = "js";
@@ -487,7 +492,10 @@
       <div class="content content--second">
         <!-- 自己紹介 (About Me) -->
         <article class="item">
-          <div class="item__img" style="background-image: url(img/3.svg)"></div>
+          <div
+            class="item__img about-me-img"
+            style="background-image: url(img/photo.jpg)"
+          ></div>
           <div class="item__content">
             <a class="item__content-back">戻る</a>
             <h2 class="item__content-title">About Me</h2>
@@ -556,9 +564,6 @@
                       alt="3D Portfolio Site"
                       onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                     />
-                    <div class="portfolio-placeholder" style="display: none">
-                      <div class="placeholder-text">3D Site</div>
-                    </div>
                     <div class="portfolio-overlay">
                       <div class="portfolio-tech">
                         <span class="tech-tag">Three.js</span>
@@ -575,10 +580,6 @@
                     <p class="portfolio-description">
                       Three.js・WebGLを活用した3Dインタラクティブサイト。最新のWeb技術への探求として制作。
                     </p>
-                    <div class="portfolio-details">
-                      <div class="portfolio-role">3D Web開発</div>
-                      <div class="portfolio-period">2024 - 現在</div>
-                    </div>
                     <a
                       href="https://webgl-chiikawa-market.netlify.app/"
                       target="_blank"
@@ -609,9 +610,6 @@
                       alt="その他制作実績"
                       onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                     />
-                    <div class="portfolio-placeholder" style="display: none">
-                      <div class="placeholder-text">Various</div>
-                    </div>
                     <div class="portfolio-overlay">
                       <div class="portfolio-tech">
                         <span class="tech-tag">HTML</span>
@@ -622,19 +620,31 @@
                   </div>
                   <div class="portfolio-content">
                     <div class="portfolio-header">
-                      <h4 class="portfolio-title">その他LP・サイト制作</h4>
-                      <span class="portfolio-company">複数企業</span>
+                      <h4 class="portfolio-title">3D Portfolio Site</h4>
+                      <span class="portfolio-company">企業サイト</span>
                     </div>
                     <p class="portfolio-description">
-                      テキストテキストテキストテキストテキストテキストテキスト
+                      Three.js・WebGLを活用した3Dインタラクティブサイト。最新のWeb技術への探求として制作。
                     </p>
-                    <div class="portfolio-details">
-                      <div class="portfolio-role">Web制作・コーディング</div>
-                      <div class="portfolio-period">2017.04 - 2018.03</div>
-                    </div>
-                    <div class="portfolio-link disabled">
-                      <span>複数サイト</span>
-                    </div>
+                    <a
+                      href="https://www.nuro.jp/hikari/10th/"
+                      target="_blank"
+                      class="portfolio-link"
+                    >
+                      <span>サイトを見る</span>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                      >
+                        <path
+                          d="M1 11L11 1M11 1H1M11 1V11"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -644,7 +654,7 @@
 
         <!-- スキル (Skills) -->
         <article class="item">
-          <div class="item__img" style="background-image: url(img/8.svg)"></div>
+          <div class="item__img" style="background-image: url(img/3.svg)"></div>
           <div class="item__content">
             <a class="item__content-back">戻る</a>
             <h2 class="item__content-title">Skills</h2>
@@ -757,7 +767,10 @@
 
         <!-- お問い合わせ (Contact) -->
         <article class="item">
-          <div class="item__img" style="background-image: url(img/4.svg)"></div>
+          <div
+            class="item__img"
+            style="background-image: url(img/16.svg)"
+          ></div>
           <div class="item__content">
             <a class="item__content-back">戻る</a>
             <h2 class="item__content-title">Contact</h2>
