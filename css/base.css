@@ -415,8 +415,9 @@ a:focus {
   height: 300px;
   width: 100%;
   flex: none;
-  background-size: cover;
+  background-size: contain;
   background-position: 50% 25%;
+  background-repeat: no-repeat;
   opacity: 0.3;
   filter: brightness(0.75) contrast(1.2);
 }

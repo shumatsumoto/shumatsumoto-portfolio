@@ -407,6 +407,56 @@
           font-size: 0.75rem;
         }
       }
+
+      /* プロフィール情報スタイル */
+      .profile-info {
+        background: var(--color-card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 0 0 2rem 0;
+        border: 1px solid var(--color-card-border);
+        backdrop-filter: blur(10px);
+      }
+
+      .profile-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .profile-item:last-child {
+        border-bottom: none;
+      }
+
+      .profile-label {
+        font-weight: 600;
+        color: var(--color-secondary);
+        font-size: 0.9rem;
+        min-width: 80px;
+      }
+
+      .profile-value {
+        color: var(--color-text);
+        font-weight: 500;
+        font-size: 0.95rem;
+        text-align: right;
+        flex: 1;
+      }
+
+      /* レスポンシブ対応 */
+      @media screen and (max-width: 768px) {
+        .profile-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.25rem;
+        }
+
+        .profile-value {
+          text-align: left;
+        }
+      }
     </style>
     <script>
       document.documentElement.className = "js";
@@ -443,8 +493,28 @@
             <h2 class="item__content-title">About Me</h2>
             <h3 class="item__content-subtitle">Webエンジニア</h3>
             <div class="item__content-text">
+              <!-- プロフィール情報 -->
+              <div class="profile-info">
+                <div class="profile-item">
+                  <span class="profile-label">名前</span>
+                  <span class="profile-value">松本 周（まつもと しゅう）</span>
+                </div>
+                <div class="profile-item">
+                  <span class="profile-label">生年月日</span>
+                  <span class="profile-value">1984.3.28</span>
+                </div>
+                <div class="profile-item">
+                  <span class="profile-label">出身地</span>
+                  <span class="profile-value">愛媛県松山市</span>
+                </div>
+                <div class="profile-item">
+                  <span class="profile-label">居住地</span>
+                  <span class="profile-value">東京都千代田区</span>
+                </div>
+              </div>
+
               <p>
-                Webエンジニアとして8年間の実務経験を積んでまいりました。
+                Webエンジニアとして約8年間の実務経験を積んでまいりました。<br />
                 大手企業での大規模Webサイト開発・運用から、チーム管理まで幅広く担当しています。
               </p>
               <p>
@@ -703,8 +773,7 @@
               </p>
               <p>
                 <strong>対応可能業務</strong><br />
-                • フロントエンド開発（HTML, CSS, JavaScript, Vue.js）<br />
-                • Webサイト・LP制作<br />
+                • Webサイト・LP制作（HTML, CSS, JavaScript, Three.js, WebGL）<br />
                 • サイト運用・保守<br />
               </p>
               <p>
