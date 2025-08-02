@@ -1,21 +1,413 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="ja" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Animated Image Columns | Codrops</title>
+    <title>松本周 - WEBコーダー ポートフォリオ</title>
     <meta
       name="description"
-      content="A template with animated columns and a content preview."
+      content="松本周のWEBコーダーとしてのポートフォリオサイト。HTML, CSS, JavaScript, Vue.js, Nuxt.jsの経験があります。"
     />
     <meta
       name="keywords"
-      content="layout, uidesign, template, css, javascript, columns, grid"
+      content="WEBコーダー, フロントエンド, JavaScript, Vue.js, Nuxt.js, HTML, CSS, ウェブ開発"
     />
-    <meta name="author" content="Codrops" />
+    <meta name="author" content="松本周" />
     <link rel="shortcut icon" href="favicon.ico" />
     <link rel="stylesheet" href="https://use.typekit.net/bml8yys.css" />
     <link rel="stylesheet" type="text/css" href="css/base.css" />
+    <style>
+      /* スキルグリッドレイアウト */
+      .item__content-text {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+      }
+
+      /* ポートフォリオグリッドレイアウト */
+      .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .portfolio-card {
+        background: var(--color-card-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--color-card-border);
+        backdrop-filter: blur(10px);
+        transition: all 0.4s ease;
+        position: relative;
+      }
+
+      .portfolio-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .portfolio-card.featured {
+        border: 2px solid var(--color-accent);
+      }
+
+      .portfolio-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+      }
+
+      .portfolio-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      .portfolio-card:hover .portfolio-image img {
+        transform: scale(1.05);
+      }
+
+      .portfolio-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+      }
+
+      .placeholder-icon {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .placeholder-text {
+        color: var(--color-text);
+        font-weight: 600;
+        font-size: 1.2rem;
+      }
+
+      .portfolio-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          to bottom,
+          transparent 0%,
+          var(--color-overlay) 100%
+        );
+        display: flex;
+        align-items: flex-end;
+        padding: 1rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .portfolio-card:hover .portfolio-overlay {
+        opacity: 1;
+      }
+
+      .portfolio-tech {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .tech-tag {
+        background: var(--color-text);
+        color: #1a1a1a;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .portfolio-content {
+        padding: 1.5rem;
+      }
+
+      .portfolio-header {
+        margin-bottom: 1rem;
+      }
+
+      .portfolio-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--color-text);
+        margin: 0 0 0.25rem 0;
+        line-height: 1.3;
+      }
+
+      .portfolio-company {
+        font-size: 0.8rem;
+        color: var(--color-secondary);
+        font-weight: 500;
+      }
+
+      .portfolio-description {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        color: rgba(224, 224, 224, 0.8);
+        margin: 0 0 1rem 0;
+      }
+
+      .portfolio-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+      }
+
+      .portfolio-role {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+
+      .portfolio-period {
+        font-size: 0.7rem;
+        color: var(--color-secondary);
+      }
+
+      .portfolio-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-accent);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        background: rgba(74, 144, 226, 0.15);
+      }
+
+      .portfolio-link:hover {
+        background: rgba(74, 144, 226, 0.25);
+        transform: translateX(2px);
+      }
+
+      .portfolio-link.disabled {
+        color: var(--color-secondary);
+        background: rgba(255, 255, 255, 0.05);
+        cursor: default;
+      }
+
+      .portfolio-link.disabled:hover {
+        transform: none;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .portfolio-link svg {
+        transition: transform 0.3s ease;
+      }
+
+      .portfolio-link:hover svg {
+        transform: translate(2px, -2px);
+      }
+
+      /* レスポンシブ対応 */
+      @media screen and (max-width: 768px) {
+        .portfolio-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .portfolio-image {
+          height: 160px;
+        }
+
+        .portfolio-content {
+          padding: 1rem;
+        }
+
+        .portfolio-details {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+      }
+
+      @media screen and (min-width: 53em) {
+        .portfolio-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 2rem;
+        }
+
+        .portfolio-image {
+          height: 220px;
+        }
+      }
+
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .skills-column {
+        background: var(--color-card-bg);
+        border-radius: 12px;
+        padding: 1.2rem;
+        border: 1px solid var(--color-card-border);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+      }
+
+      .skills-column:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      }
+
+      .skills-category {
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        color: var(--color-text);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: center;
+        position: relative;
+        padding-bottom: 0.5rem;
+      }
+
+      .skills-category::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 2px;
+        background: linear-gradient(
+          45deg,
+          var(--color-accent) 0%,
+          var(--color-accent-dark) 100%
+        );
+        border-radius: 1px;
+      }
+
+      .skill-item-compact {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0.8rem 0;
+        padding: 0.8rem 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .skill-item-compact:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.02);
+      }
+
+      .skill-name {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--color-text);
+        margin-bottom: 0.4rem;
+      }
+
+      .skill-rating {
+        display: flex;
+        gap: 2px;
+        margin-bottom: 0.4rem;
+      }
+
+      .star {
+        font-size: 0.9rem;
+        color: #4a4a4a;
+        transition: all 0.2s ease;
+      }
+
+      .star.filled {
+        color: #ffa500;
+        text-shadow: 0 0 6px rgba(255, 165, 0, 0.5);
+      }
+
+      .skill-item-compact:hover .star.filled {
+        color: #ffb500;
+        text-shadow: 0 0 8px rgba(255, 165, 0, 0.8);
+        transform: scale(1.1);
+      }
+
+      .skill-years {
+        font-size: 0.7rem;
+        color: var(--color-secondary);
+        font-weight: 400;
+      }
+
+      /* レスポンシブ対応 */
+      @media screen and (max-width: 768px) {
+        .skills-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .skills-column {
+          padding: 1rem;
+        }
+
+        .skill-item-compact {
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          text-align: left;
+          padding: 0.6rem 0.8rem;
+        }
+
+        .skill-name {
+          margin-bottom: 0;
+          flex: 1;
+        }
+
+        .skill-rating {
+          margin-bottom: 0;
+          margin-right: 0.5rem;
+        }
+
+        .skill-years {
+          min-width: 40px;
+          text-align: right;
+        }
+      }
+
+      @media screen and (min-width: 53em) {
+        .skills-grid {
+          gap: 2rem;
+        }
+
+        .skills-column {
+          padding: 1.5rem;
+        }
+
+        .skill-name {
+          font-size: 0.9rem;
+        }
+
+        .star {
+          font-size: 1rem;
+        }
+
+        .skill-years {
+          font-size: 0.75rem;
+        }
+      }
+    </style>
     <script>
       document.documentElement.className = "js";
       var supportsCssVars = function () {
@@ -41,118 +433,293 @@
   </head>
   <body class="loading">
     <main>
+      <!-- コンテンツ詳細ページ -->
       <div class="content content--second">
+        <!-- 自己紹介 (About Me) -->
         <article class="item">
           <div class="item__img" style="background-image: url(img/3.jpg)"></div>
           <div class="item__content">
-            <a class="item__content-back">back</a>
-            <h2 class="item__content-title">IO Donna</h2>
-            <h3 class="item__content-subtitle">Fashion artisans at work</h3>
+            <a class="item__content-back">戻る</a>
+            <h2 class="item__content-title">About Me</h2>
+            <h3 class="item__content-subtitle">WEBコーダー</h3>
             <div class="item__content-text">
               <p>
-                Now, when anything attracted his attention he always asked what
-                it meant; and his mother, or more frequently Uncle Maxim, would
-                explain to him the nature of the objects or of the creatures
-                that caused these various sounds.
+                WEBコーダーとして8年間の実務経験を積んでまいりました。
+                大手企業での大規模Webサイト開発・運用から、チーム管理まで幅広く担当しています。
               </p>
               <p>
-                His mother’s explanations, more lively and graphic, impressed
-                the boy with greater force; but sometimes this impression would
-                be too painful.
+                <strong>強み：</strong
+                >運用・保守の知識と技術を活用したタスク管理、効果的なタスク配分により
+                チームメンバーの強みを引き出し、効率的な役割分担を実現します。
               </p>
               <p>
-                Upon the features of the young woman, herself suffering, could
-                be read the expression of her inmost feelings, and in her eyes a
-                silent protest or a look of pain, as she strove to convey to the
-                child an idea of form and color.
+                <strong>実績：</strong
+                >安全なサイト運用業務に加えて改善案を導入。ABテストの実装により
+                コンバージョン率を15〜20%向上させた経験があります。
+              </p>
+              <p>
+                近年は特に3D技術（Three.jsやWebGL）に強い関心があり、
+                より魅力的なWeb体験を提供できる技術習得に取り組んでいます。
               </p>
             </div>
           </div>
         </article>
+
+        <!-- 制作実績 (Works) -->
         <article class="item">
           <div
             class="item__img"
             style="background-image: url(img/15.jpg)"
           ></div>
           <div class="item__content">
-            <a class="item__content-back">back</a>
-            <h2 class="item__content-title">InStyle</h2>
-            <h3 class="item__content-subtitle">Contemporary makeup art</h3>
+            <a class="item__content-back">戻る</a>
+            <h2 class="item__content-title">Works</h2>
+            <h3 class="item__content-subtitle">主な開発・制作実績</h3>
             <div class="item__content-text">
-              <p>
-                Thus blindness proved no drawback to systematic physical
-                development, while its influence over the moral nature of the
-                child was reduced to its minimum. He was tall for his age and
-                well built; his face was somewhat pale, his features fine and
-                expressive.
-              </p>
-              <p>
-                His dark hair enhanced the pallid hue of his complexion, while
-                his eyes—large, dark, and almost motionless—gave him a peculiar
-                aspect that at once attracted attention.
-              </p>
-              <p>
-                A slight wrinkle between his eye-brows, a habit of inclining his
-                head slightly forward, and the expression of sadness that[93]
-                sometimes overcast his handsome face — these were the outward
-                tokens of his blindness.
-              </p>
+              <!-- ポートフォリオグリッド -->
+              <div class="portfolio-grid">
+                <!-- 3D Portfolio Site -->
+                <div class="portfolio-card featured">
+                  <div class="portfolio-image">
+                    <img
+                      src="img/3d-portfolio.jpg"
+                      alt="3D Portfolio Site"
+                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                    />
+                    <div class="portfolio-placeholder" style="display: none">
+                      <div class="placeholder-text">3D Site</div>
+                    </div>
+                    <div class="portfolio-overlay">
+                      <div class="portfolio-tech">
+                        <span class="tech-tag">Three.js</span>
+                        <span class="tech-tag">WebGL</span>
+                        <span class="tech-tag">JavaScript</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="portfolio-content">
+                    <div class="portfolio-header">
+                      <h4 class="portfolio-title">3D Portfolio Site</h4>
+                      <span class="portfolio-company">個人制作</span>
+                    </div>
+                    <p class="portfolio-description">
+                      Three.js・WebGLを活用した3Dインタラクティブサイト。最新のWeb技術への探求として制作。
+                    </p>
+                    <div class="portfolio-details">
+                      <div class="portfolio-role">3D Web開発</div>
+                      <div class="portfolio-period">2024 - 現在</div>
+                    </div>
+                    <a
+                      href="https://webgl-chiikawa-market.netlify.app/"
+                      target="_blank"
+                      class="portfolio-link"
+                    >
+                      <span>サイトを見る</span>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                      >
+                        <path
+                          d="M1 11L11 1M11 1H1M11 1V11"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- その他の制作実績 -->
+                <div class="portfolio-card">
+                  <div class="portfolio-image">
+                    <img
+                      src="img/other-works.jpg"
+                      alt="その他制作実績"
+                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                    />
+                    <div class="portfolio-placeholder" style="display: none">
+                      <div class="placeholder-text">Various</div>
+                    </div>
+                    <div class="portfolio-overlay">
+                      <div class="portfolio-tech">
+                        <span class="tech-tag">HTML</span>
+                        <span class="tech-tag">CSS</span>
+                        <span class="tech-tag">JavaScript</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="portfolio-content">
+                    <div class="portfolio-header">
+                      <h4 class="portfolio-title">その他LP・サイト制作</h4>
+                      <span class="portfolio-company">複数企業</span>
+                    </div>
+                    <p class="portfolio-description">
+                      テキストテキストテキストテキストテキストテキストテキスト
+                    </p>
+                    <div class="portfolio-details">
+                      <div class="portfolio-role">Web制作・コーディング</div>
+                      <div class="portfolio-period">2017.04 - 2018.03</div>
+                    </div>
+                    <div class="portfolio-link disabled">
+                      <span>複数サイト</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </article>
+
+        <!-- スキル (Skills) -->
         <article class="item">
           <div class="item__img" style="background-image: url(img/8.jpg)"></div>
           <div class="item__content">
-            <a class="item__content-back">back</a>
-            <h2 class="item__content-title">Glamour</h2>
-            <h3 class="item__content-subtitle">Adventures in Moscow</h3>
+            <a class="item__content-back">戻る</a>
+            <h2 class="item__content-title">Skills</h2>
+            <h3 class="item__content-subtitle">技術スキル・専門知識</h3>
             <div class="item__content-text">
-              <p>
-                The impressions received through the channels of sound
-                outweighed all others in their influence over the life of the
-                blind boy; his ideas shaped themselves according to sounds, his
-                sense of hearing became the centre of his mental activity.
-              </p>
-              <p>
-                The enchanting melodies of the songs he heard conveyed to him a
-                true sense of the words, coloring them with sadness or joy
-                according to the lights and shades of the melody.
-              </p>
-              <p>
-                He quickly learned all his mother taught him on the piano, and
-                yet he still loved Joachim’s pipe.
-              </p>
+              <!-- スキルグリッド -->
+              <div class="skills-grid">
+                <!-- Frontend Skills -->
+                <div class="skills-column">
+                  <h4 class="skills-category">Frontend</h4>
+
+                  <div class="skill-item-compact">
+                    <span class="skill-name">HTML/CSS</span>
+                    <div class="skill-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                    </div>
+                    <span class="skill-years">8年</span>
+                  </div>
+
+                  <div class="skill-item-compact">
+                    <span class="skill-name">JavaScript</span>
+                    <div class="skill-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                    </div>
+                    <span class="skill-years">8年</span>
+                  </div>
+
+                  <div class="skill-item-compact">
+                    <span class="skill-name">Vue.js</span>
+                    <div class="skill-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star">★</span>
+                    </div>
+                    <span class="skill-years">3年</span>
+                  </div>
+                </div>
+
+                <!-- Learning... -->
+                <div class="skills-column">
+                  <h4 class="skills-category">Learning...</h4>
+
+                  <div class="skill-item-compact">
+                    <span class="skill-name">Three.js</span>
+                    <div class="skill-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star">★</span>
+                      <span class="star">★</span>
+                    </div>
+                    <span class="skill-years">習得中</span>
+                  </div>
+
+                  <div class="skill-item-compact">
+                    <span class="skill-name">WebGL</span>
+                    <div class="skill-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star">★</span>
+                      <span class="star">★</span>
+                      <span class="star">★</span>
+                    </div>
+                    <span class="skill-years">習得中</span>
+                  </div>
+                </div>
+
+                <!-- Management & Operations -->
+                <div class="skills-column">
+                  <h4 class="skills-category">Management</h4>
+
+                  <div class="skill-item-compact">
+                    <span class="skill-name">保守・運用</span>
+                    <div class="skill-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                    </div>
+                    <span class="skill-years">7年</span>
+                  </div>
+
+                  <div class="skill-item-compact">
+                    <span class="skill-name">チーム管理</span>
+                    <div class="skill-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star">★</span>
+                    </div>
+                    <span class="skill-years">5年</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </article>
+
+        <!-- お問い合わせ (Contact) -->
         <article class="item">
           <div class="item__img" style="background-image: url(img/4.jpg)"></div>
           <div class="item__content">
-            <a class="item__content-back">back</a>
-            <h2 class="item__content-title">Vogue Paris</h2>
-            <h3 class="item__content-subtitle">Gucci festival feature</h3>
+            <a class="item__content-back">戻る</a>
+            <h2 class="item__content-title">Contact</h2>
+            <h3 class="item__content-subtitle">お問い合わせ・ご連絡</h3>
             <div class="item__content-text">
               <p>
-                Thus the boy’s day was filled; he could not complain of the lack
-                of new impressions.
+                お仕事のご依頼、ご相談、その他ご質問等がございましたら、
+                お気軽にお問い合わせください。
               </p>
               <p>
-                He seemed to be living as full a life as any child could
-                possibly live; in fact he really seemed unconscious of his
-                blindness.
+                <strong>Mail</strong><br />
+                shumatsumoto0328@gmail.com
               </p>
               <p>
-                Nevertheless, a certain premature sadness was still perceptible
-                in his character, which Maxim ascribed to the fact that he had
-                never mingled with other children, and endeavored to atone for
-                this omission.
+                <strong>対応可能業務</strong><br />
+                • フロントエンド開発（HTML, CSS, JavaScript, Vue.js）<br />
+                • Webサイト・LP制作<br />
+                • サイト運用・保守<br />
+              </p>
+              <p>
+                フリーランスとして、クオリティの高いWebサービス開発に貢献いたします。
+                まずはお気軽にご相談ください。
               </p>
             </div>
           </div>
         </article>
       </div>
+
+      <!-- メインビューページ -->
       <div class="content content--first">
         <div class="content__move">
+          <!-- 背景画像カラム -->
           <div class="columns">
             <div class="column">
               <div
@@ -311,21 +878,24 @@
               ></div>
             </div>
           </div>
-          <!--/columns-->
+
+          <!-- メインナビゲーション -->
           <nav class="menu">
-            <a class="menu__item">IO Donna</a>
-            <a class="menu__item">InStyle</a>
-            <a class="menu__item">Glamour</a>
-            <a class="menu__item">Vogue Paris</a>
+            <a class="menu__item">About Me</a>
+            <a class="menu__item">Works</a>
+            <a class="menu__item">Skills</a>
+            <a class="menu__item">Contact</a>
           </nav>
         </div>
-        <!--/content--move-->
       </div>
-      <!--/content-->
     </main>
+
+    <!-- カスタムカーソル -->
     <div class="cursor">
       <div class="cursor__inner cursor__inner--circle"></div>
     </div>
+
+    <!-- JavaScript -->
     <script src="js/imagesloaded.pkgd.min.js"></script>
     <script src="js/charming.min.js"></script>
     <script src="js/bezier-easing.min.js"></script>
