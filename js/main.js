@@ -178,7 +178,7 @@
 
         // Delayed reveal animation
         gsap
-          .timeline({ delay: 1.5 })
+          .timeline({ delay: 0.8 })
           .to(aboutSvg, {
             duration: 1.5,
             ease: "power2.out",
