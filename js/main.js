@@ -26,7 +26,7 @@
   // Modern event handling for mouse position
   const getMousePos = (ev) => ({
     x: ev.clientX,
-    y: ev.clientY
+    y: ev.clientY,
   });
 
   let mousepos = { x: winsize.width / 2, y: winsize.height / 2 };
@@ -36,7 +36,6 @@
     columns: true,
     letters: true,
   };
-
 
   // Custom cursor with modern GSAP
   class Cursor {
@@ -64,13 +63,13 @@
       );
       this.direction = this.lastY - mousepos.y > 0 ? "up" : "down";
       this.lastScale = MathUtils.lerp(this.lastScale, this.scale, 0.15);
-      
+
       gsap.set(this.DOM.circle, {
         x: this.lastMousePos.x,
         y: this.lastMousePos.y,
-        scale: this.lastScale
+        scale: this.lastScale,
       });
-      
+
       this.lastY = mousepos.y;
       requestAnimationFrame(() => this.render());
     }
@@ -126,7 +125,7 @@
             ),
             0.03
           );
-          
+
           gsap.set(this.DOM.el, {
             x: translationVals.tx,
             y: translationVals.ty,
@@ -146,7 +145,7 @@
     constructor(el) {
       this.DOM = { el: el };
       this.DOM.title = this.DOM.el.querySelector(".item__content-title");
-      
+
       // Create spans out of every letter using charming
       charming(this.DOM.title);
       this.DOM.titleLetters = [...this.DOM.title.querySelectorAll("span")];
@@ -165,6 +164,46 @@
 
     setCurrent() {
       this.DOM.el.classList.add("item--current");
+
+      // About Me SVG animation with delay
+      const aboutSvg = this.DOM.el.querySelector(".content__img--about");
+      if (aboutSvg) {
+        const mask = aboutSvg.querySelector(".mask");
+        const image = aboutSvg.querySelector("image");
+
+        // Initial state - completely hidden
+        gsap.set(aboutSvg, { opacity: 0 });
+        gsap.set(mask, { attr: { r: 0 } });
+        gsap.set(image, { scale: 1.3, filter: "brightness(70%)" });
+
+        // Delayed reveal animation
+        gsap
+          .timeline({ delay: 1.5 })
+          .to(aboutSvg, {
+            duration: 1.5,
+            ease: "power2.out",
+            opacity: 1,
+          })
+          .to(
+            mask,
+            {
+              duration: 3.0,
+              ease: "power2.out",
+              attr: { r: 950 },
+            },
+            0.8
+          )
+          .to(
+            image,
+            {
+              duration: 2.0,
+              ease: "power2.out",
+              scale: 1.0715,
+              filter: "brightness(117.886%)",
+            },
+            0.5
+          );
+      }
     }
 
     resetCurrent() {
@@ -188,7 +227,7 @@
         this.totalRandomLetters <= this.lettersTotal
           ? this.totalRandomLetters
           : this.lettersTotal;
-      
+
       this.lettersTranslations = Array.from(
         { length: this.totalRandomLetters },
         () => {
@@ -212,10 +251,10 @@
         const shuffled = [...this.DOM.letters].sort(() => 0.5 - Math.random());
         this.DOM.randLetters = shuffled.slice(0, this.totalRandomLetters);
       };
-      
+
       this.mousemoveFn = (ev) => requestAnimationFrame(() => this.tilt(ev));
       this.mouseleaveFn = () => this.resetTilt();
-      
+
       this.DOM.el.addEventListener("mouseenter", this.mouseenterFn);
       this.DOM.el.addEventListener("mousemove", this.mousemoveFn);
       this.DOM.el.addEventListener("mouseleave", this.mouseleaveFn);
@@ -223,7 +262,7 @@
 
     tilt(ev) {
       if (!activeTilt.letters || !this.DOM.randLetters) return;
-      
+
       const bounds = this.DOM.el.getBoundingClientRect();
       const relmousepos = {
         x: mousepos.x - bounds.left,
@@ -248,33 +287,36 @@
             0,
             relmousepos.y
           ),
-          overwrite: "auto"
+          overwrite: "auto",
         });
       });
     }
 
     resetTilt() {
       if (!activeTilt.letters || !this.DOM.randLetters) return;
-      
+
       const tl = gsap.timeline();
-      
+
       tl.to(this.DOM.randLetters, {
         duration: 0.2,
         ease: "quad.out",
         y: cursor.direction === "up" ? "-80%" : "80%",
         rotation: cursor.direction === "up" ? -10 : 10,
         opacity: 0,
-        overwrite: true
-      })
-      .to(this.DOM.randLetters, {
-        duration: MathUtils.getRandomFloat(0.5, 0.7),
-        ease: "elastic.out(1, 0.4)",
-        y: "0%",
-        rotation: 0,
-        opacity: 1,
-        stagger: 0.02,
-        overwrite: false
-      }, 0.2);
+        overwrite: true,
+      }).to(
+        this.DOM.randLetters,
+        {
+          duration: MathUtils.getRandomFloat(0.5, 0.7),
+          ease: "elastic.out(1, 0.4)",
+          y: "0%",
+          rotation: 0,
+          opacity: 1,
+          stagger: 0.02,
+          overwrite: false,
+        },
+        0.2
+      );
     }
   }
 
@@ -287,7 +329,7 @@
     }
 
     initEvents() {
-      this.menuItems.forEach(menuItem => {
+      this.menuItems.forEach((menuItem) => {
         menuItem.DOM.el.addEventListener("click", () =>
           this.openItem(menuItem)
         );
@@ -313,76 +355,110 @@
       });
 
       // Animate columns out
-      tl.to(columnsElems, {
-        duration: duration,
-        ease: ease,
-        y: (i, target) => {
-          const column = columns[i];
-          return target.classList.contains("column--bottom")
-            ? column.height + winsize.height * 0.2
-            : -1 * column.height - winsize.height * 0.2;
+      tl.to(
+        columnsElems,
+        {
+          duration: duration,
+          ease: ease,
+          y: (i, target) => {
+            const column = columns[i];
+            return target.classList.contains("column--bottom")
+              ? column.height + winsize.height * 0.2
+              : -1 * column.height - winsize.height * 0.2;
+          },
+          opacity: 0,
+          stagger: 0,
         },
-        opacity: 0,
-        stagger: 0,
-      }, 0)
+        0
+      )
 
-      // Animate columns wrap
-      .to(columnsWrap, {
-        duration: duration,
-        ease: ease,
-        rotation: -2,
-      }, 0)
+        // Animate columns wrap
+        .to(
+          columnsWrap,
+          {
+            duration: duration,
+            ease: ease,
+            rotation: -2,
+          },
+          0
+        )
 
-      // Animate menu items out
-      .to(menuItem.DOM.letters, {
-        duration: duration * 0.7,
-        ease: ease,
-        y: (i) => i % 2 == 0 
-          ? MathUtils.getRandomFloat(-250, -150)
-          : MathUtils.getRandomFloat(150, 250),
-        rotation: `+=${MathUtils.getRandomFloat(0, 20)}`,
-        opacity: 0,
-        stagger: -0.01,
-      }, 0)
+        // Animate menu items out
+        .to(
+          menuItem.DOM.letters,
+          {
+            duration: duration * 0.7,
+            ease: ease,
+            y: (i) =>
+              i % 2 == 0
+                ? MathUtils.getRandomFloat(-250, -150)
+                : MathUtils.getRandomFloat(150, 250),
+            rotation: `+=${MathUtils.getRandomFloat(0, 20)}`,
+            opacity: 0,
+            stagger: -0.01,
+          },
+          0
+        )
 
-      .to(this.menuItems
-        .filter((item) => item != menuItem)
-        .map((t) => t.DOM.el), {
-        duration: duration * 0.5,
-        ease: ease,
-        opacity: 0,
-      }, 0)
+        .to(
+          this.menuItems
+            .filter((item) => item != menuItem)
+            .map((t) => t.DOM.el),
+          {
+            duration: duration * 0.5,
+            ease: ease,
+            opacity: 0,
+          },
+          0
+        )
 
-      // Content reveal effect
-      .to(content.first, {
-        duration: duration * 0.8,
-        ease: "expo.out",
-        y: "100%",
-      }, duration)
+        // Content reveal effect
+        .to(
+          content.first,
+          {
+            duration: duration * 0.8,
+            ease: "expo.out",
+            y: "100%",
+          },
+          duration
+        )
 
-      .to(contentMove, {
-        duration: duration * 0.8,
-        ease: "expo.out",
-        y: "-100%",
-      }, duration)
+        .to(
+          contentMove,
+          {
+            duration: duration * 0.8,
+            ease: "expo.out",
+            y: "-100%",
+          },
+          duration
+        )
 
-      // Animate content title
-      .set(contentItem.DOM.titleLetters, {
-        opacity: 0,
-        y: (i) => i % 2 == 0 
-          ? MathUtils.getRandomFloat(-35, -15)
-          : MathUtils.getRandomFloat(15, 35),
-        rotation: MathUtils.getRandomFloat(-20, 0),
-      }, duration)
+        // Animate content title
+        .set(
+          contentItem.DOM.titleLetters,
+          {
+            opacity: 0,
+            y: (i) =>
+              i % 2 == 0
+                ? MathUtils.getRandomFloat(-35, -15)
+                : MathUtils.getRandomFloat(15, 35),
+            rotation: MathUtils.getRandomFloat(-20, 0),
+          },
+          duration
+        )
 
-      .to(contentItem.DOM.titleLetters, {
-        duration: duration,
-        ease: "expo.out",
-        y: 0,
-        rotation: 0,
-        opacity: 1,
-        stagger: -0.01,
-      }, duration);
+        .to(
+          contentItem.DOM.titleLetters,
+          {
+            duration: duration,
+            ease: "expo.out",
+            y: 0,
+            rotation: 0,
+            opacity: 1,
+            stagger: -0.01,
+          },
+          duration
+        );
     }
 
     closeItem() {
@@ -401,60 +477,85 @@
         },
       });
 
-      tl.to(contentItem.DOM.titleLetters, {
-        duration: duration * 0.6,
-        ease: "power4.out",
-        y: (i) => i % 2 == 0 
-          ? MathUtils.getRandomFloat(-35, -15)
-          : MathUtils.getRandomFloat(15, 35),
-        rotation: MathUtils.getRandomFloat(-20, 0),
-        opacity: 0,
-        stagger: 0.01,
-      }, 0)
-
-      .to([content.first, contentMove], {
-        duration: duration * 0.6,
-        ease: "power4.out",
-        y: "0%",
-        onComplete: () => {
-          contentItem.resetCurrent();
+      tl.to(
+        contentItem.DOM.titleLetters,
+        {
+          duration: duration * 0.6,
+          ease: "power4.out",
+          y: (i) =>
+            i % 2 == 0
+              ? MathUtils.getRandomFloat(-35, -15)
+              : MathUtils.getRandomFloat(15, 35),
+          rotation: MathUtils.getRandomFloat(-20, 0),
+          opacity: 0,
+          stagger: 0.01,
         },
-      }, 0.2)
+        0
+      )
 
-      .to(columnsElems, {
-        duration: duration,
-        ease: ease,
-        y: 0,
-        x: 0,
-        opacity: 1,
-        stagger: 0.02,
-      }, duration * 0.6)
+        .to(
+          [content.first, contentMove],
+          {
+            duration: duration * 0.6,
+            ease: "power4.out",
+            y: "0%",
+            onComplete: () => {
+              contentItem.resetCurrent();
+            },
+          },
+          0.2
+        )
 
-      .to(columnsWrap, {
-        duration: duration,
-        ease: ease,
-        rotation: 0,
-      }, duration * 0.6)
+        .to(
+          columnsElems,
+          {
+            duration: duration,
+            ease: ease,
+            y: 0,
+            x: 0,
+            opacity: 1,
+            stagger: 0.02,
+          },
+          duration * 0.6
+        )
 
-      .to(this.menuItems[this.currentItem].DOM.letters, {
-        duration: duration * 0.6,
-        ease: "quint.out",
-        y: 0,
-        opacity: 1,
-        rotation: 0,
-      }, duration)
+        .to(
+          columnsWrap,
+          {
+            duration: duration,
+            ease: ease,
+            rotation: 0,
+          },
+          duration * 0.6
+        )
 
-      .to(this.DOM.items, {
-        duration: duration * 0.6,
-        ease: ease,
-        opacity: 1,
-      }, duration);
+        .to(
+          this.menuItems[this.currentItem].DOM.letters,
+          {
+            duration: duration * 0.6,
+            ease: "quint.out",
+            y: 0,
+            opacity: 1,
+            rotation: 0,
+          },
+          duration
+        )
+
+        .to(
+          this.DOM.items,
+          {
+            duration: duration * 0.6,
+            ease: ease,
+            opacity: 1,
+          },
+          duration
+        );
     }
   }
 
   // Initialize
   const cursor = new Cursor(document.querySelector(".cursor"));
-  
+
   const content = {
     first: document.querySelector(".content--first"),
     second: document.querySelector(".content--second"),

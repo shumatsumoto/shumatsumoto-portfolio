@@ -1070,6 +1070,16 @@ a:focus {
   background-size: 55% !important;
 }
 
+/* About Me SVG animation */
+.content__img--about {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.item--current .content__img--about {
+  opacity: 1;
+}
+
 /* SNSリンク */
 .social-links {
   position: fixed;

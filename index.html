@@ -31,10 +31,19 @@
       <div class="content content--second">
         <!-- 自己紹介 (About Me) -->
         <article class="item">
-          <div
-            class="item__img about-me-img"
-            style="background-image: url(img/photo.jpg)"
-          ></div>
+          <svg class="item__img about-me-img content__img content__img--about" width="1000" height="450" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 450">
+            <defs>
+              <filter id="displacementFilterAbout">
+                <feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="1" result="noise"></feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="noise" result="displacement" scale="100" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+                <feMorphology operator="dilate" radius="2" result="morph" in="displacement"></feMorphology>
+              </filter>
+              <mask id="circleMaskAbout">
+                <circle cx="50%" cy="50%" r="339.83742" data-value-final="950" fill="white" class="mask" style="filter: url(#displacementFilterAbout);"></circle>
+              </mask>
+            </defs>
+            <image xlink:href="img/photo.jpg" width="1000" height="450" mask="url(#circleMaskAbout)" data-svg-origin="500 225" transform="matrix(1.0715,0,0,1.0715,-35.75,-16.0875)" style="translate: none; rotate: none; scale: none; transform-origin: 0px 0px; filter: brightness(117.886%);"></image>
+          </svg>
           <div class="item__content">
             <a class="item__content-back">戻る</a>
             <h2 class="item__content-title">About Me</h2>
