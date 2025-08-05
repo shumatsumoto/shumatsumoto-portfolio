@@ -458,7 +458,7 @@ a:focus {
   width: 100%;
   flex: none;
   background-size: contain;
-  background-position: 50% 25%;
+  background-position: 50% 50%;
   background-repeat: no-repeat;
   opacity: 0.3;
   filter: brightness(0.75) contrast(1.2);
@@ -844,7 +844,20 @@ a:focus {
   }
 
   .item__img {
+    display: block;
+    width: 90%;
     height: 200px;
+    margin: 0 auto;
+    background-position: 50% 50%;
+    background-size: contain;
+  }
+
+  .item__content-text {
+    margin: var(--space-md) 0 var(--space-md) 0;
+  }
+
+  .item__content-text::after {
+    top: calc(100% + var(--space-sm));
   }
 }
 
@@ -994,6 +1007,12 @@ a:focus {
   .skill-years {
     min-width: 40px;
     text-align: right;
+  }
+
+  .item {
+    position: absolute;
+    top: 0;
+    padding-top: 4rem;
   }
 }
 
