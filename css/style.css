@@ -569,6 +569,7 @@ a:focus {
     height: 100%;
     width: 45%;
     background-position: 50% 50%;
+    background-size: 80%;
   }
   .item__content {
     padding: 15vh min(12vw, var(--space-2xl)) 0 min(8vw, var(--space-xl));
